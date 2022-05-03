@@ -1,1 +1,1 @@
-# final-projects
+# SEIR Model Stimulations
