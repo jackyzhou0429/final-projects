@@ -4,6 +4,7 @@ Created on Tue Apr 26 23:10:46 2022
 
 @author: 10949
 """
+
 from scipy.integrate import odeint
 import numpy as np
 import matplotlib.pyplot as plt
@@ -31,7 +32,7 @@ s0     = 1-i0 #Initial value of the vulnerability ratio
 y0     = (i0,s0) #Initial values of differential equations
 
 print("lamda={}\tmu={}\tsigma={}".format(lamda,mu,sigma))
-      
+
 ySI  = odeint(dySIS, i0, t,args=(lamda,0))
 ySIS = odeint(dySIS, i0, t,args=(lamda,mu))
 ySIR = odeint(dySIR, y0, t,args=(lamda,mu))
@@ -45,5 +46,5 @@ plt.plot(t,ySIS[:,0],'-r', label='i(t)-SIR')
 plt.plot(t,ySIR[:,1],'-b', label='s(t)-SIR')
 plt.plot(t,1-ySIR[:,0]-ySIR[:,1], 'm', label='r(t)-SIR')
 plt.legend(loc='best')
+plt.savefig('./compare.png')
 plt.show()
-
