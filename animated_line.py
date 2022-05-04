@@ -126,6 +126,11 @@ class interface:
              command = self.openNewWindow)
         btn.place(x=0,y=200)
         
+        btn = tk.Button(master=frame_2,
+             text ="Click to open the pie chart",
+             command = self.openPieWindow)
+        btn.place(x=0,y=300)
+        
         b_plot=tk.Button(master=frame_2,text='show picture',width=15,height=2,command=self.graph)
         b_plot.place(x=0,y=0)
         
@@ -210,7 +215,83 @@ class interface:
         anim = animation.FuncAnimation(fig, animate, np.arange(1, x), interval=25, repeat=False)
     
         newWindow.mainloop()
-
+        
+    def openPieWindow(self):
+        '''
+        This function helps to open a new window where it shows the SEIR percentage of total Suspectable cases with different sets of data.
+        '''
+        #Create a new window what shows the pie chart animation
+        global piewindow 
+        piewindow = tk.Toplevel(window)
+        piewindow.title("Pie chart for stimulation")
+        
+        #Create a new frame on the window
+        frame_1 =tk.Frame(piewindow)
+        frame_1.pack(fill='both', side='left')
+        
+        #Solve the differenial equation with the given input by the user.
+        sol = solve_ivp(seir_m, [0, self.size], [0.99, 0.01, 0, 0], 
+                    rtol=1e-6, args=(self.beta, self.sigma, self.gamma))
+        
+        #Create fours lists for different types of results.
+        s, e, i, r = sol.y
+        
+        #Plot the pie chart
+        fig, ax = plt.subplots()
+        
+        #Find the index posistions of element '0' in order to clear them later on.
+        def searchzero(list):
+            '''
+            Find the index(es) of number 0 in the list
+            '''
+            #Create a list where it contains all indexes of 0.
+            zeroindex = []
+            for i in range(len(list)):
+                if list[i] == 0:
+                    zeroindex.append(i)
+            return zeroindex
+            
+        
+        def changingpie(num):
+            '''
+            This function helps to show the SEIR percentage of total Suspectable cases with different sets of data.
+            '''
+            # make sure previous axis data were wiped so that the new pie chart won't be messed up.
+            ax.clear() 
+            
+            #Create lists of all variables needed for the pie chart animation.
+            nums = [s[num], e[num], i[num], r[num]]
+            labels = ['S', 'E', 'I', 'R']
+            colors = ['gold', 'green', 'violet', 'royalblue']
+            zeroindex = []
+            
+            #Find 0 indexes
+            for m in range(len(nums)):
+                if nums[m] == 0:
+                    zeroindex.append(m)
+                    
+            #Reverse the elements inside the list so that lists can remove elemnts from larger indexes to smaller indexes.
+            zeroindex1 = zeroindex[::-1]
+            
+            #Remove all elements coresponded with 0 in nums.
+            for k in zeroindex1:
+                labels.pop(k)
+                colors.pop(k)
+                nums.pop(k)
+                
+            #Create a pie chart with certain value.
+            ax.pie(nums, labels=labels, colors=colors, autopct='%.2f%%', shadow = False, normalize = True)
+            ax.set_title('SEIR proportion for a certain Suspectable group')
+            
+        #Create a canvas so that function annimation can be shown on it. 
+        canvas = FigureCanvasTkAgg(fig, master=frame_1)
+        canvas.get_tk_widget().pack()
+        
+        #Create animation
+        ani = animation.FuncAnimation(fig, changingpie, frames=len(s), repeat=False) 
+        
+        #Repeat checking the input value changes
+        piewindow.mainloop()
 interface(window)
 
 window.mainloop()
