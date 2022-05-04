@@ -17,7 +17,7 @@ import matplotlib.animation as animation
 from tkinter import *
 from tkinter.ttk import *
 
-size=100  
+days=100  
 beta=1
 sigma=1
 gamma=0.1
@@ -45,13 +45,17 @@ this function will return the differential equation which will be solved later.
 
 # R0=beta*s0/gamma
 
-import tkinter as tk
-window = tk.Tk()
+import tkinter as tk # import tkinter model to create the interactive window
+window = tk.Tk() # create a window
 window.title('simulation for COVID-19')
-window.geometry('1000x700')
+window.geometry('1000x700') # basic setting of the window
 label= tk.Label(text='simulated graph for COVID-19',font=('Arial',25),
                  width=33,height=1)
 label.pack()
+'''
+create a label, set the width height and font and show it on the window
+'''
+
 
 class interface:
     '''
@@ -62,10 +66,11 @@ class interface:
         sigma
         gamma
     then they can apply the change of the 
-    In frame 2, the user can 
+    In frame 2, the user can choose which type of garph to show. 
+    if the button is clicked, a new window will appear to show the graph. 
     '''
     def __init__(self, master):
-        self.size=size   
+        self.days=days   
         self.beta=beta
         self.sigma=sigma
         self.gamma=gamma
@@ -127,7 +132,7 @@ class interface:
         
     def insert_size(self):
         var=self.e1.get()
-        self.size=int(var)
+        self.days=int(var)
 
     def insert_beta(self):
         var=self.e2.get()
@@ -142,7 +147,7 @@ class interface:
         self.gamma=float(var) 
     
     def graph(self):
-        sol = solve_ivp(seir_m, [0,self.size], [0.99, 0.01, 0, 0], 
+        sol = solve_ivp(seir_m, [0,self.days], [0.99, 0.01, 0, 0], 
                     rtol=1e-6, args=(self.beta, self.sigma, self.gamma))
         
         fig = plt.figure(); ax = fig.gca()
@@ -161,7 +166,7 @@ class interface:
         frame_x =tk.Frame(newWindow)
         frame_x.pack(fill='both', side='left')
         
-        sol = solve_ivp(seir_m, [0, self.size], [0.99, 0.01, 0, 0], 
+        sol = solve_ivp(seir_m, [0, self.days], [0.99, 0.01, 0, 0], 
                     rtol=1e-6, args=(self.beta, self.sigma, self.gamma))
         s, e, i, r = sol.y
         
@@ -170,7 +175,7 @@ class interface:
         fig= plt.Figure() 
         axes = fig.add_subplot(111)
         axes.set_ylim(0, 1.1)
-        axes.set_xlim(0, self.size)
+        axes.set_xlim(0, self.days)
         line, =axes.plot(0, 0.99)
         line1, =axes.plot(0, 0.01)
         line2, =axes.plot(0, 0)
