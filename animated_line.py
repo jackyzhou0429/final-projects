@@ -5,10 +5,17 @@ Created on Tue Apr 19 03:46:11 2022
 @author: ALIENWARE
 """
 '''
+parameter explain:
+    Tinc is incubation period in days (in covid-19 it is usually 5.2 days )
+    Tinf is infectious period in days (in covid-19 it is usually 2.3 days )
+    R0 is the Reproduction Number (in covid-19 it is usually 2.2)
+    sigma=1/Tinc
+    gamma=1/Tinf
+    beta= R0*gamma= R0/Tinf
 
 '''
 
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt	
 from scipy.integrate import solve_ivp
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
@@ -18,15 +25,15 @@ import tkinter as tk
 '''
 the inital value for the parameter:
     the number of days is 100
-    beta is 1
+    beta is 2.2/2.3  beta= R0*gamma
     sigma is 1
     gamma is 0.1
 '''
 
 days=100  
-beta=1
-sigma=1
-gamma=0.1
+beta=2.2/2.3
+sigma=1/5.2
+gamma=1/2.3
 
 
 ''' 
