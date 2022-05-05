@@ -162,7 +162,7 @@ class interface:
     # the four functions below will get the value in the entry and convert the entry user entered to the parameter:
         # days, beta, sigma, gamma
     
-        def insert_days(self):
+    def insert_days(self):
         var=self.e1.get()
         if var.isdigit()==False:
             tk.messagebox.showerror('Error', 'Error: the number of days can only be positive integers!')
