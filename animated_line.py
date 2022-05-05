@@ -4,23 +4,16 @@ Created on Tue Apr 19 03:46:11 2022
 
 @author: ALIENWARE
 """
+'''
+
+'''
 
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
-from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
-import tkinter as Tk
 import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-from tkinter import *
-from tkinter.ttk import *
-
-days=100  
-beta=1
-sigma=1
-gamma=0.1
+import tkinter as tk
 
 '''
 the inital value for the parameter:
@@ -30,6 +23,18 @@ the inital value for the parameter:
     gamma is 0.1
 '''
 
+days=100  
+beta=1
+sigma=1
+gamma=0.1
+
+
+''' 
+this is the differential equation for seir model
+this function will return the differential equation which will be solved later.
+
+'''
+
 def seir_m(t, y, beta, sigma, gamma):   
     S, E, I, R= y
     dSdt=-beta*I*S
@@ -37,30 +42,11 @@ def seir_m(t, y, beta, sigma, gamma):
     dIdt=-gamma*I+sigma*E
     dRdt=gamma*I
     return dSdt, dEdt, dIdt, dRdt
-''' 
-this is the differential equation for seir model
-this function will return the differential equation which will be solved later.
-
-'''
-
-# R0=beta*s0/gamma
-
-import tkinter as tk # import tkinter model to create the interactive window
-window = tk.Tk() # create a window
-window.title('simulation for COVID-19')
-window.geometry('1000x700') # basic setting of the window
-label= tk.Label(text='simulated graph for COVID-19',font=('Arial',25),
-                 width=33,height=1)
-label.pack()
-'''
-create a label, set the width height and font and show it on the window
-'''
-
 
 class interface:
     '''
     this interface class will generate two frames: frame 1 and frame 2 on the window.
-    In frame 1, the user can select the enter the parameter they want to enter : 
+    In frame 1, the user can select the enter the parameter they want to enter: 
         the number of days 
         beta
         sigma
@@ -70,20 +56,25 @@ class interface:
     if the button is clicked, a new window will appear to show the graph. 
     '''
     def __init__(self, master):
+        # set the parameter that will be used in the window, it will be updated 
+        # if the user enter different parameter it will change and plot different graphs
         self.days=days   
         self.beta=beta
         self.sigma=sigma
         self.gamma=gamma
         
+        # create 2 frames next to each other
         frame_1 = tk.Frame(master, width=550, height=600)
         frame_1.pack(fill='both', side='left')
 
         frame_2 = tk.Frame(master, width=450, height=600)
         frame_2.pack(fill='both', side='right')
 
+        # create a label on the frame 1
         label_tit=tk.Label(master=frame_1, text="select the parameter below:",foreground="black",font=('Calibri',20))
         label_tit.place(x=0,y=0)
 
+        # 4 entries are set up to let user enter the parameters, they are placed at frame 1
         self.e1=tk.Entry(master=frame_1,show=None)
         self.e1.place(x=170,y=65)
         
@@ -96,6 +87,7 @@ class interface:
         self.e4=tk.Entry(master=frame_1,show=None)
         self.e4.place(x=170,y=365)
         
+        # 4 buttons are set up to let user apply the parameters they entered, they are placed at frame 1
         b_size=tk.Button(master=frame_1,text='apply',width=15,height=2,command=self.insert_size)
         b_size.place(x=360,y=50) 
         
@@ -109,6 +101,7 @@ class interface:
         b_gamma=tk.Button(master=frame_1,text='apply',width=15,height=2,command=self.insert_gamma)
         b_gamma.place(x=360,y=350)
         
+        # 4 labels are set up to show what are the  parameters, they are placed at frame 1
         label_size=tk.Label(master=frame_1, text="the number of days:",foreground="black",font=('Calibri',10))
         label_size.place(x=0,y=60)
         
@@ -121,20 +114,26 @@ class interface:
         label_gamma=tk.Label(master=frame_1, text="the value of gamma:",foreground="black",font=('Calibri',10))
         label_gamma.place(x=0,y=360)
         
+        # the button to open the animated line graph
         btn = tk.Button(master=frame_2,
-             text ="Click to open the line graph",
-             command = self.openNewWindow)
-        btn.place(x=0,y=200)
+             text ="Click to open the animated line graph",
+             command = self.openLineWindow)
+        btn.place(x=0,y=100)
         
+        # the button to open the pie chart
         btn = tk.Button(master=frame_2,
              text ="Click to open the pie chart",
              command = self.openPieWindow)
-        btn.place(x=0,y=300)
+        btn.place(x=0,y=180)
         
-        b_plot=tk.Button(master=frame_2,text='show picture',width=15,height=2,command=self.graph)
+        # the button to open the line graph
+        b_plot=tk.Button(master=frame_2,text='show line graph',width=15,height=2,command=self.graph)
         b_plot.place(x=0,y=0)
+    
         
-        
+    # the four functions below will get the value in the entry and convert the entry user entered to the parameter:
+        # days, beta, sigma, gamma
+    
     def insert_size(self):
         var=self.e1.get()
         self.days=int(var)
@@ -151,48 +150,83 @@ class interface:
         var=self.e4.get()
         self.gamma=float(var) 
     
+    
+
     def graph(self):
+        '''
+        the function below will produce a line graph based on the default parameter or the parameter 
+        user entered.
+        '''
+        # the code below will return the solution of the seir differential equation as a list
+        # the inital value is s0=0.99 e=0.01 i=0 r=0
         sol = solve_ivp(seir_m, [0,self.days], [0.99, 0.01, 0, 0], 
                     rtol=1e-6, args=(self.beta, self.sigma, self.gamma))
         
+        # create a graph 
         fig = plt.figure(); ax = fig.gca()
+        
+        # plot the lines on the graph  according to the list above, 4 lines total 
         lines = ax.plot(sol.t, sol.y.T)
+        
+        #basic settings of the graph: legend, xlabel, ylabel, title and return the graph finally.
         ax.legend(lines, ['S', 'E', 'I', 'R']);
         ax.set_xlabel('days')
         ax.set_ylabel('proportion of all')
+        ax.set_title('Line graph for SEIR model')
         return plt.gcf()
     
-    def openNewWindow(self):
-        global newWindow
-        newWindow = tk.Toplevel(window)
-        newWindow.title("Line graph for simulation")
+    def openLineWindow(self):
+        '''
+        This function helps to open a new window where it shows the SEIR animation line graph 
+        based on the default parameter or the parameter user entered.
+        '''
         
-        global frame_x
-        frame_x =tk.Frame(newWindow)
+        # create a window to show the graph, set the title of the window.
+        global LineWindow
+        LineWindow = tk.Toplevel(window)
+        LineWindow.title("Line graph for simulation")
+        
+        
+        # create a frame on the window designed to put the canvas on it
+        frame_x =tk.Frame(LineWindow)
         frame_x.pack(fill='both', side='left')
         
+        # solve the differential equation, return a list
         sol = solve_ivp(seir_m, [0, self.days], [0.99, 0.01, 0, 0], 
                     rtol=1e-6, args=(self.beta, self.sigma, self.gamma))
         s, e, i, r = sol.y
         
+        # record the lens of the list which will be used later
         x=len(sol.t)
         
+        # set up the figure, and x, y axes range
         fig= plt.Figure() 
         axes = fig.add_subplot(111)
         axes.set_ylim(0, 1.1)
         axes.set_xlim(0, self.days)
+        
+        # plot the 4 lines according to the data returned from the anmation function below from the inital value
         line, =axes.plot(0, 0.99)
         line1, =axes.plot(0, 0.01)
         line2, =axes.plot(0, 0)
         line3, =axes.plot(0, 0)
+        
+        # basic setting of the graph: the style of the graph, legend, xlabel, ylabel and title
         plt.style.use("ggplot")
         axes.legend(['S', 'E', 'I', 'R']);
         axes.set_xlabel('days')
         axes.set_ylabel('proportion of all')
         axes.set_title('Animation line graph for SEIR model')
+        
+        # create 5 empty lists that will be used to store x ,s,e,i,r value in the following function
         x1, y1, y2, y3, y4 = [], [], [], [], []
         
         def animate(a):
+            '''
+            this animate() function will set the data for the FuncAnimation, 
+            update the data from the listed created above and return the 4 lines' data 
+            ready to be plotted.
+            '''
             x1.append((sol.t[a]))
             y1.append((s[a]))
             y2.append((e[a]))
@@ -209,12 +243,16 @@ class interface:
             line3.set_ydata(y4)
             
             return line, line1, line2, line3, 
+        
+        #create a canvas that show the animation graph on the canvas
         canvas = FigureCanvasTkAgg(fig, master=frame_x)
         canvas.get_tk_widget().grid(column=0,row=1)
-    
+        
+        # create animation using FuncAnimation
         anim = animation.FuncAnimation(fig, animate, np.arange(1, x), interval=25, repeat=False)
-    
-        newWindow.mainloop()
+        
+        # loop the window until the user close the window.
+        LineWindow.mainloop()
         
     def openPieWindow(self):
         '''
@@ -230,7 +268,7 @@ class interface:
         frame_1.pack(fill='both', side='left')
         
         #Solve the differenial equation with the given input by the user.
-        sol = solve_ivp(seir_m, [0, self.size], [0.99, 0.01, 0, 0], 
+        sol = solve_ivp(seir_m, [0, self.days], [0.99, 0.01, 0, 0], 
                     rtol=1e-6, args=(self.beta, self.sigma, self.gamma))
         
         #Create fours lists for different types of results.
@@ -292,6 +330,26 @@ class interface:
         
         #Repeat checking the input value changes
         piewindow.mainloop()
+
+
+'''
+the code below create the inital window that will show all the content 
+and achieve the goal!
+
+'''
+# create a window
+window = tk.Tk()
+
+# basic setting of the window: the sizw of the window and the title of the window
+window.title('simulation for COVID-19')
+
+# create a label, set the width height and font and show it on the window
+window.geometry('1000x700')
+label= tk.Label(text='simulated graph for COVID-19',font=('Arial',25),
+                 width=33,height=1)
+label.pack()
+
+# use class interface to show two frames and achieve the interactive function
 interface(window)
 
 window.mainloop()
