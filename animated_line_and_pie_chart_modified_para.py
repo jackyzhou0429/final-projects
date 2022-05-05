@@ -2,10 +2,21 @@
 """
 Created on Tue Apr 19 03:46:11 2022
 
-@author: ALIENWARE
+@author: yichen2002, jackyzhou0429
 """
+
 '''
-parameter explain:
+This program create a main window which the user can simulate the pendemic based on SEIR model.
+on the window, the user can change the parameter: days, Tinc, Tinf, R0. A label will show the parameter 
+information to tell the user what are the parameter now. 
+then the user can choose what garph to show:
+    static line graph
+    animated line graph
+    animated pie chart
+    different model pictures
+    
+   
+Parameter explain:
     Tinc is incubation period in days (in covid-19 it is usually 5.2 days )
     Tinf is infectious period in days (in covid-19 it is usually 2.3 days )
     R0 is the Reproduction Number (in covid-19 it is usually 2.2)
@@ -30,7 +41,7 @@ the inital value for the parameter:
     gamma is 1/2.3
 '''
 
-days=100  
+days=100 
 beta=2.2/2.3
 sigma=1/5.2
 gamma=1/2.3
@@ -44,7 +55,7 @@ this function will return the differential equation which will be solved later.
 
 '''
 
-def seir_m(t, y, beta, sigma, gamma):   
+def seir_model(t, y, beta, sigma, gamma):   
     S, E, I, R= y
     dSdt=-beta*I*S
     dEdt=-sigma*E+beta*I*S
@@ -82,6 +93,7 @@ class interface:
                     "\n incubation period is now: 5.2"
                      "\n infectious period is now: 2.3"
                      "\n Reproduction Number is now: 2.2")
+        
         # create 2 frames next to each other
         frame_1 = tk.Frame(master, width=550, height=600)
         frame_1.pack(fill='both', side='left')
@@ -216,7 +228,6 @@ class interface:
                     f"\n incubation period is now: {self.Tinc}" 
                     f"\n infectious period is now: {self.Tinf}"
                     f"\n Reproduction Number is now: {self.R0}"
-                    #f"\n {self.beta} {self.sigma} {self.gamma}"
                     )
 
     def graph(self):
@@ -226,7 +237,7 @@ class interface:
         '''
         # the code below will return the solution of the seir differential equation as a list
         # the inital value is s0=0.99 e=0.01 i=0 r=0
-        sol = solve_ivp(seir_m, [0,self.days], [1-1/20000, 1/20000, 0, 0], 
+        sol = solve_ivp(seir_model, [0,self.days], [1-1/20000, 1/20000, 0, 0], 
                     rtol=1e-6, args=(self.beta, self.sigma, self.gamma))
         
         # create a graph 
@@ -236,9 +247,9 @@ class interface:
         lines = ax.plot(sol.t, sol.y.T)
         
         #basic settings of the graph: legend, xlabel, ylabel, title and return the graph finally.
-        ax.legend(lines, ['S', 'E', 'I', 'R']);
+        ax.legend(lines, ['Susceptible', 'Exposed', 'Infected', 'Recovered']);
         ax.set_xlabel('days')
-        ax.set_ylabel('proportion of all')
+        ax.set_ylabel('proportion')
         ax.set_title('Line graph for SEIR model')
         return plt.gcf()
     
@@ -250,8 +261,8 @@ class interface:
         
         # create a window to show the graph, set the title of the window.
         global LineWindow
-        LineWindow = tk.Toplevel(window)
-        LineWindow.title("Line graph for simulation")
+        LineWindow = tk.Toplevel(main_window)
+        LineWindow.title("Animated line graph for simulation")
         
         
         # create a frame on the window designed to put the canvas on it
@@ -259,7 +270,7 @@ class interface:
         frame_x.pack(fill='both', side='left')
         
         # solve the differential equation, return a list
-        sol = solve_ivp(seir_m, [0, self.days], [0.99, 0.01, 0, 0], 
+        sol = solve_ivp(seir_model, [0, self.days], [1-1/20000, 1/20000, 0, 0], 
                     rtol=1e-6, args=(self.beta, self.sigma, self.gamma))
         s, e, i, r = sol.y
         
@@ -273,14 +284,14 @@ class interface:
         axes.set_xlim(0, self.days)
         
         # plot the 4 lines according to the data returned from the anmation function below from the inital value
-        line, =axes.plot(0, 0.99)
-        line1, =axes.plot(0, 0.01)
-        line2, =axes.plot(0, 0)
-        line3, =axes.plot(0, 0)
+        line, =axes.plot(0, 1-1/20000,linewidth=2,color='blue')
+        line1, =axes.plot(0, 1/20000,linewidth=2,color='black')
+        line2, =axes.plot(0, 0,linewidth=2, color='red')
+        line3, =axes.plot(0, 0,linewidth=2, color='green')
         
         # basic setting of the graph: the style of the graph, legend, xlabel, ylabel and title
         plt.style.use("ggplot")
-        axes.legend(['S', 'E', 'I', 'R']);
+        axes.legend(['Susceptible', 'Exposed', 'Infected', 'Recovered']);
         axes.set_xlabel('days')
         axes.set_ylabel('proportion of all')
         axes.set_title('Animation line graph for SEIR model')
@@ -327,16 +338,15 @@ class interface:
         '''
         #Create a new window what shows the pie chart animation
         global piewindow 
-        piewindow = tk.Toplevel(window)
+        piewindow = tk.Toplevel(main_window)
         piewindow.title("Pie chart for stimulation")
-        piewindow.geometry('600x600')
         
         #Create a new frame on the window
         frame_1 =tk.Frame(piewindow)
         frame_1.pack(fill='both')
         
         #Solve the differenial equation with the given input by the user.
-        sol = solve_ivp(seir_m, [0, self.days], [0.99, 0.01, 0, 0], 
+        sol = solve_ivp(seir_model, [0, self.days], [1-1/20000, 1/20000, 0, 0], 
                     rtol=1e-6, args=(self.beta, self.sigma, self.gamma))
         
         #Create fours lists for different types of results.
@@ -403,7 +413,7 @@ class interface:
         Show a new window contains a static graph, which comparing SI, SIR and SIS models.
         ''' 
         #Set new window size and title.
-        comparewindow = tk.Toplevel(window)
+        comparewindow = tk.Toplevel(main_window)
         comparewindow.title("Compare 3 models")
         comparewindow.geometry('700x600')
         
@@ -420,19 +430,19 @@ the code below create the inital window that will show all the content
 and achieve the goal!
 
 '''
-# create a window
-window = tk.Tk()
+# create a mian window
+main_window = tk.Tk()
 
 # basic setting of the window: the sizw of the window and the title of the window
-window.title('simulation for COVID-19')
+main_window.title('simulation for COVID-19')
 
 # create a label, set the width height and font and show it on the window
-window.geometry('1000x700')
+main_window.geometry('1000x700')
 label= tk.Label(text='simulated graph for COVID-19',font=('Arial',25),
                  width=33,height=1)
 label.pack()
 
 # use class interface to show two frames and achieve the interactive function
-interface(window)
+interface(main_window)
 
-window.mainloop()
+main_window.mainloop()
