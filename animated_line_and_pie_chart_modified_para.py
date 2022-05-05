@@ -75,6 +75,7 @@ class interface:
         self.Tinf=Tinf
         self.R0=R0
         
+        # set the vari that will set the information show on the label and update when the para changes
         vari = tk.StringVar()
         self.vari=vari
         self.vari.set("the simulation days is now:100"
@@ -161,29 +162,54 @@ class interface:
     # the four functions below will get the value in the entry and convert the entry user entered to the parameter:
         # days, beta, sigma, gamma
     
-    def insert_days(self):
+        def insert_days(self):
         var=self.e1.get()
-        self.days=int(var)
-        self.parameter_explain()
+        if var.isdigit()==False:
+            tk.messagebox.showerror('Error', 'Error: the number of days can only be positive integers!')
+        else:
+            self.days=int(var)
+            self.parameter_explain()
 
     def insert_R0(self):
         var=self.e2.get()
-        self.R0=float(var)
-        self.beta=float(var)*self.gamma
-        self.parameter_explain()
+        try:
+            float(var)
+            if float(var)<0:
+                tk.messagebox.showerror('Error', 'Error: the value of R0 can only be positive number!')
+            else:
+                self.R0=float(var)
+                self.beta=float(var)*self.gamma
+                self.parameter_explain()
+        except ValueError:
+            tk.messagebox.showerror('Error', 'Error: the value of R0 can only be positive number!')
         
     def insert_Tinc(self):
         var=self.e3.get()
-        self.Tinc=float(var)
-        self.sigma=1/float(var)
-        self.parameter_explain()
+        try:
+            float(var)
+            if float(var)<0:
+                tk.messagebox.showerror('Error', 'Error: the value of Tinc can only be positive number!')
+            else:
+                self.Tinc=float(var)
+                self.sigma=1/float(var)
+                self.parameter_explain()
+        except ValueError:
+            tk.messagebox.showerror('Error', 'Error: the value of Tinc can only be positive number!')
 
     def insert_Tinf(self):
         var=self.e4.get()
-        self.Tinf=float(var)
-        self.gamma=1/float(var)
-        self.beta=self.R0*self.gamma
-        self.parameter_explain()
+        try:
+            float(var)
+            if float(var)<0:
+                tk.messagebox.showerror('Error', 'Error: the value of Tinf can only be positive number!')
+            else:
+                self.Tinf=float(var)
+                self.gamma=1/float(var)
+                self.beta=self.R0*self.gamma
+                self.parameter_explain()
+        except ValueError:
+            tk.messagebox.showerror('Error', 'Error: the value of Tinf can only be positive number!')
+    
     
     def parameter_explain(self):
         self.vari.set(f"the simulation days is now: {self.days}"
@@ -303,7 +329,7 @@ class interface:
         global piewindow 
         piewindow = tk.Toplevel(window)
         piewindow.title("Pie chart for stimulation")
-        piewindow.geometry('700x600')
+        piewindow.geometry('600x600')
         
         #Create a new frame on the window
         frame_1 =tk.Frame(piewindow)
@@ -317,9 +343,9 @@ class interface:
         s, e, i, r = sol.y
         
         #Set default values for pie chart.
-        plt.rcParams['font.size'] = 14
+        plt.rcParams['font.size'] = 12
         plt.rcParams["figure.autolayout"] = True
-        plt.rcParams["figure.figsize"] = [14, 14]
+        plt.rcParams["figure.figsize"] = [12, 8]
         
         #Plot the pie chart
         fig, ax = plt.subplots()
@@ -339,11 +365,6 @@ class interface:
             fulllabels = ['Susceptible percentage', 'Exposed percentage', 'Infectious percentage', 'Recovered percentage']
             colors = ['gold', 'green', 'violet', 'royalblue']
             zeroindex = []
-            
-            #Find 0 indexes
-            for m in range(len(nums)):
-                if nums[m] == 0:
-                    zeroindex.append(m)
             
             #Find indexes of number cannot shown on pie chart.
             for m in range(len(nums)):
