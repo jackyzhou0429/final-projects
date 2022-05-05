@@ -1,5 +1,3 @@
-
-
 import argparse
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
@@ -42,45 +40,31 @@ sol = solve_ivp(seir_m, [0, args.size], [0.99, 0.01, 0, 0],
          rtol=1e-6, args=(args.beta, args.sigma, args.gamma))
 s, e, i, r = sol.y
 
+#print(s)
+plt.xticks(np.arange(0, 61, 10))
 
-plt.title('COVID-19')
+S = tuple(s)
+E = tuple(e)
+I = tuple(i)
+R = tuple(r)
 
+S = list(s)
+E = list(e)
+I = list(i)
+R = list(r)
 
-plt.xticks(np.arange(0, 100, 20))
-plt.xlabel('day')
+#print(S)
 
-plt.yticks(np.arange(0, 1, 0.2))
-plt.ylabel('proportion')
-
-sol = solve_ivp(seir_m, [0, args.size], [0.99, 0.01, 0, 0], 
-         rtol=1e-6, args=(args.beta, args.sigma, args.gamma))
-s, e, i, r = sol.y
-
-
-S = s
-E = e
-I = i
-R = r
-
-
-d = []
-for i in range (0,len(S)):
-    sum = S[i] + E[i]
-    d.append(sum)
-    
-width = 1
-
-axes.legend(['S', 'E', 'I', 'R']);
-
-p1 = plt.bar(ind, S, width, color = 'blue')
-p2 = plt.bar(ind, E, width, color = 'green')
-p3 = plt.bar(ind, I, width, color = 'red')
-p4 = plt.bar(ind, R, width, color = 'yellow')
+P1 = plt.bar(range(len(S)), S, lable = 'S', fc = 'b')
+P2 = plt.bar(range(len(S)), E, bottom = S, lable = 'E', fc = 'g')
+P3 = plt.bar(range(len(I)), I, bottom = E, lable = 'I', fc = 'y')
+P4 = plt.bar(range(len(R)), R, bottom = R, lable = 'R', fc = 'r')
 
 plt.legend((p1[0], p2[0], p3[0], p4[0]), ('S', 'E', 'I', 'R'), low = 4)
 
-
+plt.legend()
 plt.show()
+
 
 
 
