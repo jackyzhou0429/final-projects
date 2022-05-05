@@ -1,0 +1,120 @@
+
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Apr 20 00:04:59 2022
+
+@author: ALIENWARE
+"""
+
+import argparse
+import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
+from matplotlib.animation import FuncAnimation
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+import tkinter as Tk
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from tkinter import *
+from tkinter.ttk import *
+
+parser = argparse.ArgumentParser(description='epidemic simulation parameter')
+parser.add_argument('--size', type=int, default=100, help=" the size of the crowd you want to simulate.")
+parser.add_argument('--beta',type=float, default=1, help="beta in SEIR model")
+parser.add_argument('--sigma',type=float, default=1, help="sigma in SEIR model")
+parser.add_argument('--gamma',type=float, default=0.1, help="gamma in SEIR model")
+args = parser.parse_args()
+
+if __name__ =='__main__':
+    print(args.beta)
+    
+    
+
+def seir_m(t, y, beta, sigma, gamma):   
+    S, E, I, R= y
+    dSdt=-beta*I*S
+    dEdt=-sigma*E+beta*I*S
+    dIdt=-gamma*I+sigma*E
+    dRdt=gamma*I
+    return dSdt, dEdt, dIdt, dRdt
+
+#line graph animation   #Create lists for SEIR from solve_ivp solution above.
+
+
+
+master = Tk()
+ 
+# sets the geometry of main
+# root window
+master.geometry("200x200")
+ 
+ 
+# function to open a new window
+# on a button click
+def openNewWindow():
+    global newWindow
+    newWindow = Toplevel(master)
+    newWindow.title("New Window")
+    
+    global frame_1
+    frame_1 =Frame(newWindow)
+    frame_1.pack(fill='both', side='left')
+    
+    sol = solve_ivp(seir_m, [0, args.size], [0.99, 0.01, 0, 0], 
+                rtol=1e-6, args=(args.beta, args.sigma, args.gamma))
+    s, e, i, r = sol.y
+ 
+    fig= plt.Figure() 
+    axes = fig.add_subplot(111)
+    axes.set_ylim(0, 1)
+    axes.set_xlim(0, 100)
+    line, =axes.plot(0, 0.99)
+    line1, =axes.plot(0, 0.01)
+    line2, =axes.plot(0, 0)
+    line3, =axes.plot(0, 0)
+    plt.style.use("ggplot")
+    axes.legend(['S', 'E', 'I', 'R']);
+    axes.set_xlabel('days')
+    axes.set_ylabel('proportion of all')
+    x1, y1, y2, y3, y4 = [], [], [], [], []
+    
+    def animate(a):
+        x1.append((sol.t[a]))
+        y1.append((s[a]))
+        y2.append((e[a]))
+        y3.append((i[a]))
+        y4.append((r[a]))
+        
+        line.set_xdata(x1)
+        line.set_ydata(y1)
+        line1.set_xdata(x1)
+        line1.set_ydata(y2)
+        line2.set_xdata(x1)
+        line2.set_ydata(y3)
+        line3.set_xdata(x1)
+        line3.set_ydata(y4)
+        
+        return line, line1, line2, line3, 
+    canvas = FigureCanvasTkAgg(fig, master=frame_1)
+    canvas.get_tk_widget().grid(column=0,row=1)
+
+    anim = animation.FuncAnimation(fig, animate, np.arange(1, 60), interval=25, repeat=False)
+
+    newWindow.mainloop()
+ 
+label = Label(master,
+              text ="This is the main window")
+ 
+label.pack(pady = 10)
+ 
+# a button widget which will open a
+# new window on button click
+btn = Button(master,
+             text ="Click to open a new window",
+             command = openNewWindow)
+btn.pack(pady = 10)
+ 
+# mainloop, runs infinitely
+mainloop()
