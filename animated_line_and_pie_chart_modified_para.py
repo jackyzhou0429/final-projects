@@ -147,6 +147,12 @@ class interface:
              command = self.openPieWindow)
         btn.place(x=0,y=180)
         
+        # the button to open picture which compares different model.
+        btn = tk.Button(master=frame_2,
+             text ="Click to open different model pictures",
+             command = self.callcompare)
+        btn.place(x=0,y=500)
+        
         # the button to open the line graph
         b_plot=tk.Button(master=frame_2,text='show line graph',width=15,height=2,command=self.graph)
         b_plot.place(x=0,y=0)
@@ -297,10 +303,11 @@ class interface:
         global piewindow 
         piewindow = tk.Toplevel(window)
         piewindow.title("Pie chart for stimulation")
+        piewindow.geometry('700x600')
         
         #Create a new frame on the window
         frame_1 =tk.Frame(piewindow)
-        frame_1.pack(fill='both', side='left')
+        frame_1.pack(fill='both')
         
         #Solve the differenial equation with the given input by the user.
         sol = solve_ivp(seir_m, [0, self.days], [0.99, 0.01, 0, 0], 
@@ -309,22 +316,16 @@ class interface:
         #Create fours lists for different types of results.
         s, e, i, r = sol.y
         
+        #Set default values for pie chart.
+        plt.rcParams['font.size'] = 14
+        plt.rcParams["figure.autolayout"] = True
+        plt.rcParams["figure.figsize"] = [14, 14]
+        
         #Plot the pie chart
         fig, ax = plt.subplots()
+
         
-        #Find the index posistions of element '0' in order to clear them later on.
-        def searchzero(list):
-            '''
-            Find the index(es) of number 0 in the list
-            '''
-            #Create a list where it contains all indexes of 0.
-            zeroindex = []
-            for i in range(len(list)):
-                if list[i] == 0:
-                    zeroindex.append(i)
-            return zeroindex
-            
-        
+
         def changingpie(num):
             '''
             This function helps to show the SEIR percentage of total Suspectable cases with different sets of data.
@@ -335,6 +336,7 @@ class interface:
             #Create lists of all variables needed for the pie chart animation.
             nums = [s[num], e[num], i[num], r[num]]
             labels = ['S', 'E', 'I', 'R']
+            fulllabels = ['Susceptible percentage', 'Exposed percentage', 'Infectious percentage', 'Recovered percentage']
             colors = ['gold', 'green', 'violet', 'royalblue']
             zeroindex = []
             
@@ -342,19 +344,28 @@ class interface:
             for m in range(len(nums)):
                 if nums[m] == 0:
                     zeroindex.append(m)
-                    
+            
+            #Find indexes of number cannot shown on pie chart.
+            for m in range(len(nums)):
+                if nums[m] < 0.001:
+                    zeroindex.append(m)
+            
             #Reverse the elements inside the list so that lists can remove elemnts from larger indexes to smaller indexes.
             zeroindex1 = zeroindex[::-1]
             
             #Remove all elements coresponded with 0 in nums.
             for k in zeroindex1:
                 labels.pop(k)
+                fulllabels.pop(k)
                 colors.pop(k)
                 nums.pop(k)
                 
             #Create a pie chart with certain value.
-            ax.pie(nums, labels=labels, colors=colors, autopct='%.2f%%', shadow = False, normalize = True)
-            ax.set_title('SEIR proportion for a certain Suspectable group')
+            pie = ax.pie(nums, labels=labels, colors=colors, autopct='%.1f%%', shadow = True, normalize = True)
+            handles, marks = ax.get_legend_handles_labels()
+            plt.legend(pie[0], fulllabels, loc = 'upper right')
+            ax.axis('equal')
+            ax.set_title('SEIR proportion for a certain Suspectable group',fontsize = 16)
             
         #Create a canvas so that function annimation can be shown on it. 
         canvas = FigureCanvasTkAgg(fig, master=frame_1)
@@ -366,7 +377,23 @@ class interface:
         #Repeat checking the input value changes
         piewindow.mainloop()
 
-
+    def callcompare(self):
+        '''
+        Show a new window contains a static graph, which comparing SI, SIR and SIS models.
+        ''' 
+        #Set new window size and title.
+        comparewindow = tk.Toplevel(window)
+        comparewindow.title("Compare 3 models")
+        comparewindow.geometry('700x600')
+        
+        #Use Label to show the picture saved in the same directory.
+        pic = tk.PhotoImage(file = 'compare.png')
+        label_img = tk.Label(comparewindow, image = pic)
+        label_img.pack()
+        
+        #Run tkinter event loop
+        comparewindow.mainloop()
+        
 '''
 the code below create the inital window that will show all the content 
 and achieve the goal!
