@@ -26,8 +26,8 @@ import tkinter as tk
 the inital value for the parameter:
     the number of days is 100
     beta is 2.2/2.3  beta= R0*gamma
-    sigma is 1
-    gamma is 0.1
+    sigma is 1/5.2
+    gamma is 1/2.3
 '''
 
 days=100  
