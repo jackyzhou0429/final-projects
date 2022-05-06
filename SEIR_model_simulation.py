@@ -6,10 +6,13 @@ Created on Tue Apr 19 03:46:11 2022
 """
 
 '''
-This program create a main window which the user can simulate the pendemic based on SEIR model.
+This program will create a main window which the user can simulate the pendemic based on SEIR model if 
+the code is run.
 on the window, the user can change the parameter: days, Tinc, Tinf, R0. A label will show the parameter 
 information to tell the user what are the parameter now. 
-then the user can choose what garph to show:
+if the user enter wrong format of number, the input will not be recorded and there will be a message box 
+telling the user "you entered the wrong format".
+After that, the user can choose what garph to show:
     static line graph
     animated line graph
     animated pie chart
