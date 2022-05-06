@@ -122,31 +122,31 @@ class interface:
         self.e4.place(x=170,y=365)
         
         # 4 buttons are set up to let user apply the parameters they entered, they are placed at frame 1
-        b_size=tk.Button(master=frame_1,text='apply',width=15,height=2,command=self.insert_days)
-        b_size.place(x=360,y=50) 
+        b_days=tk.Button(master=frame_1,text='apply',width=15,height=2,command=self.insert_days)
+        b_days.place(x=360,y=50) 
         
-        b_beta=tk.Button(master=frame_1,text='apply',width=15,height=2,command=self.insert_R0)
-        b_beta.place(x=360,y=150)  
+        b_R0=tk.Button(master=frame_1,text='apply',width=15,height=2,command=self.insert_R0)
+        b_R0.place(x=360,y=150)  
         
-        b_sigma=tk.Button(master=frame_1,text='apply',width=15,height=2,command=self.insert_Tinc)
-        b_sigma.place(x=360,y=250)
+        b_Tinc=tk.Button(master=frame_1,text='apply',width=15,height=2,command=self.insert_Tinc)
+        b_Tinc.place(x=360,y=250)
         
            
-        b_gamma=tk.Button(master=frame_1,text='apply',width=15,height=2,command=self.insert_Tinf)
-        b_gamma.place(x=360,y=350)
+        b_Tinf=tk.Button(master=frame_1,text='apply',width=15,height=2,command=self.insert_Tinf)
+        b_Tinf.place(x=360,y=350)
         
         # 4 labels are set up to show what are the  parameters, they are placed at frame 1
-        label_size=tk.Label(master=frame_1, text="the number of days:",foreground="black",font=('Calibri',10))
-        label_size.place(x=0,y=60)
+        label_days=tk.Label(master=frame_1, text="the number of days:",foreground="black",font=('Calibri',10))
+        label_days.place(x=0,y=60)
         
-        label_beta=tk.Label(master=frame_1, text="the value of R0:",foreground="black",font=('Calibri',10))
-        label_beta.place(x=0,y=160)
+        label_R0=tk.Label(master=frame_1, text="the value of R0:",foreground="black",font=('Calibri',10))
+        label_R0.place(x=0,y=160)
         
-        label_sigma=tk.Label(master=frame_1, text="the value of Tinc:",foreground="black",font=('Calibri',10))
-        label_sigma.place(x=0,y=260)
+        label_Tinc=tk.Label(master=frame_1, text="the value of Tinc:",foreground="black",font=('Calibri',10))
+        label_Tinc.place(x=0,y=260)
         
-        label_gamma=tk.Label(master=frame_1, text="the value of Tinf:",foreground="black",font=('Calibri',10))
-        label_gamma.place(x=0,y=360)
+        label_Tinf=tk.Label(master=frame_1, text="the value of Tinf:",foreground="black",font=('Calibri',10))
+        label_Tinf.place(x=0,y=360)
         
         label_exp=tk.Label(master=frame_1, textvariable =self.vari,foreground="black",font=('Calibri',10))
         label_exp.place(x=0,y=460)
@@ -237,6 +237,8 @@ class interface:
         '''
         the function below will produce a line graph based on the default parameter or the parameter 
         user entered.
+        
+        it may show in the Spyder Plots window, it depends on the setting of Spyder.
         '''
         # the code below will return the solution of the seir differential equation as a list
         # the inital value is s0=0.99 e=0.01 i=0 r=0
