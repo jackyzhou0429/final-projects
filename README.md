@@ -11,7 +11,8 @@ then the user can choose what garph to show:
 ## How to use  
 This code should be run in Spyder. 
 - You may need to install matplotlib, tkiner, numpy. 
-- To show the graph properly, you should got to __Tools, Preferences__, click on __IPython console__ on the left then select __Graphics__ tab on the right top. under __GRAPHICS backend__, select __Automatic__ then apply.  
+- To show the graph properly, you should got to __Tools, Preferences__, click on __IPython console__ on the left then select __Graphics__ tab on the right top. under __GRAPHICS backend__, select __Automatic__ then apply.
+- if you want to end the program or end a graph, just close the window and the program will be stopped  
  
 The main program file for this stimulation is __SEIR_model_simulation.py__. Open it in Spyder and run it, the main window will appear like the picture shown below:  
 ![image](https://user-images.githubusercontent.com/98830245/167046659-88e1c428-7c59-40e8-a0fe-d280709733e0.png)  
