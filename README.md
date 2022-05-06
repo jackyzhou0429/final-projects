@@ -20,5 +20,5 @@ The left part inside the main window shows all the parameters needed for stimula
 The right part inside the main window contains four different buttons. The top 3 buttons show the static line graph, annimated line graph and animated pie chart respectively, all of them can be changed by adjusting parameter values. The bottom button shows the data difference between different models (SI, SIR and SEIR), it is a static picture and will not be changed by adjusting parameter value.  
 
 - if you want to see how the graph in compare.png generate, you can see SI,SIS,SIR.py for code or SI,SIS,SIR model lab repo-Copy1 (1).ipynb for notebook.
- 
+- The project report is the file named SEIR_model_simulation_report.ipynb, it should be read in Jupyter notebook. 
     
